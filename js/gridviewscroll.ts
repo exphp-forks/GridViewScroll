@@ -481,18 +481,23 @@ class GridViewScroll {
         let paddingTop = this.getPaddingTop(this.ContentGridItemRow.cells.item(0));
         let paddingBottom = this.getPaddingBottom(this.ContentGridItemRow.cells.item(0));
 
+        let helperElements = [];
+        for (var i = 0; i < this.ContentGrid.rows.length; i++) {
+            let gridItemRow = this.ContentGrid.rows.item(i);
+            let gridItemCell = gridItemRow.cells.item(0);
+            if ((<HTMLElement>gridItemCell.firstChild).className == "gridViewScrollHelper") {
+                helperElements.push(<HTMLDivElement>gridItemCell.firstChild);
+            }
+            else {
+                helperElements.push(this.appendHelperElement(gridItemCell));
+            }
+        }
+
         for (var i = 0; i < this.ContentGrid.rows.length; i++) {
             let gridItemRow = this.ContentGrid.rows.item(i);
             let gridItemCell = gridItemRow.cells.item(0);
 
-            let helperElement;
-
-            if ((<HTMLElement>gridItemCell.firstChild).className == "gridViewScrollHelper") {
-                helperElement = <HTMLDivElement>gridItemCell.firstChild;
-            }
-            else {
-                helperElement = this.appendHelperElement(gridItemCell);
-            }
+            let helperElement = helperElements[i];
 
             let helperHeight = parseInt(String(gridItemCell.offsetHeight - paddingTop - paddingBottom));
 
