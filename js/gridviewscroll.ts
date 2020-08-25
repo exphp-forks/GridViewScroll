@@ -19,6 +19,7 @@
  */
 class GridViewScrollOptions {
     elementID: string;
+    containerID: string;
     width: string;
     height: string;
     freezeColumn: boolean;
@@ -45,6 +46,7 @@ class GridViewScroll {
     private OnScroll: GridViewScrollOnScroll;
 
     private GridID: string;
+    private ContainerID: string;
 
     private GridWidth: string;
     private GridHeight: string;
@@ -122,6 +124,9 @@ class GridViewScroll {
         if (options.freezeColumnCount == null)
             options.freezeColumnCount = 1;
 
+        if (options.containerID == null)
+            options.containerID = "";
+
         this.initializeOptions(options);
     }
 
@@ -140,6 +145,7 @@ class GridViewScroll {
         this.FreezeHeaderRowCount = options.freezeHeaderRowCount;
         this.FreezeColumnCount = options.freezeColumnCount;
 
+        this.ContainerID = options.containerID;
         this.OnScroll = options.onscroll;
     }
 
@@ -173,21 +179,26 @@ class GridViewScroll {
         this.Parent = <HTMLElement>this.ContentGrid.parentNode;
 
         this.ContentGrid.style.display = "none";
+        if (this.ContainerID == null || this.ContainerID == "") {
+            if (typeof this.GridWidth == 'string' && this.GridWidth.indexOf("%") > -1) {
+                var percentage = parseInt(this.GridWidth);
+                this.Width = this.Parent.offsetWidth * percentage / 100;
+            }
+            else {
+                this.Width = parseInt(this.GridWidth);
+            }
 
-        if (typeof this.GridWidth == 'string' && this.GridWidth.indexOf("%") > -1) {
-            var percentage = parseInt(this.GridWidth);
-            this.Width = this.Parent.offsetWidth * percentage / 100;
+            if (typeof this.GridHeight == 'string' && this.GridHeight.indexOf("%") > -1) {
+                var percentage = parseInt(this.GridHeight);
+                this.Height = this.Parent.offsetHeight * percentage / 100;
+            }
+            else {
+                this.Height = parseInt(this.GridHeight);
+            }
         }
         else {
-            this.Width = parseInt(this.GridWidth);
-        }
-
-        if (typeof this.GridHeight == 'string' && this.GridHeight.indexOf("%") > -1) {
-            var percentage = parseInt(this.GridHeight);
-            this.Height = this.Parent.offsetHeight * percentage / 100;
-        }
-        else {
-            this.Height = parseInt(this.GridHeight);
+            this.Width = document.getElementById(this.ContainerID).clientWidth;
+            this.Height = document.getElementById(this.ContainerID).clientHeight;
         }
 
         this.ContentGrid.style.display = "";
